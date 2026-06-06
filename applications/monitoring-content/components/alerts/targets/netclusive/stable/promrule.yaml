@@ -1,0 +1,11 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: netclusive-stable
+  namespace: monitoring
+  labels:
+    monitoring.cybertec.at/scope: customers
+spec:
+  groups:
+    - name: netclusive.stable
+      rules: []
