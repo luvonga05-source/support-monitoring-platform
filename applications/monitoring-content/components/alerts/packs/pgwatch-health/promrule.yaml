@@ -1,0 +1,45 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pack-pgwatch-health
+  namespace: monitoring-support
+  labels:
+    monitoring.cybertec.at/scope: customers
+spec:
+  groups:
+    - name: pack.pgwatch-health
+      rules:
+        - alert: PGWatchRSInstanceDown
+          expr: >
+            count(max_over_time(pgwatch_rs_instance_up[1d])) by (customer)
+            unless (count(pgwatch_rs_instance_up) by (customer))
+          for: 15m
+          labels:
+            severity: critical
+            team: infra
+            priority: P1
+          annotations:
+            summary: "pgwatch_rs instance offline"
+            description: "A pgwatch_rs instance has disappeared"
+
+        - alert: PGWatchRSScrapeError
+          expr: pgwatch_rs_scrape_errors > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: dba
+            priority: P1
+          annotations:
+            summary: "pgwatch_rs had one or more scrape errors"
+            description: "See service pgwatch_rs status for error log"
+
+        - alert: PGWatchRSInstanceScrapeError
+          expr: pgwatch_rs_instance_scrape_error{shutdown!="True"} > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: infra
+            priority: P1
+          annotations:
+            summary: "pgwatch_rs instance scrape error"
+            description: "See service pgwatch_rs status for error log"

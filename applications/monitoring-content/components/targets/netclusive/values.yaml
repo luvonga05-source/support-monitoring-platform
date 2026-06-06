@@ -1,0 +1,21 @@
+config:
+  datasource:
+    # Primary node of the netclusive DMRZ cluster
+    # Other cluster nodes: 10.0.0.67, 10.0.0.68
+    host: "10.0.0.66"
+    port: "5432"
+    database: "dmrz"
+    sslmode: "disable"
+    userSecret:
+      name: "pgx-conn"
+      key: "username"
+    passwordSecret:
+      name: "pgx-conn"
+      key: "password"
+
+serviceMonitor:
+  enabled: true
+  labels:
+    monitoring.cybertec.at/scope: customers
+  additionalLabels:
+    monitoring.cybertec.at/scope: customers

@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: target-a-experimental
+  namespace: monitoring-support
+  labels:
+    monitoring.cybertec.at/scope: customers
+spec:
+  groups:
+    - name: target-a.experimental
+      rules:
+        - alert: TargetAExampleExperimentalAlert
+          expr: vector(1)
+          for: 1m
+          labels:
+            severity: info
+          annotations:
+            summary: "Experimental alert for target-a"

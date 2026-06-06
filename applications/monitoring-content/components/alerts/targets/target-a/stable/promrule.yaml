@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: target-a-stable
+  namespace: monitoring-support
+  labels:
+    monitoring.cybertec.at/scope: customers
+spec:
+  groups:
+    - name: target-a.stable
+      rules:
+        - alert: TargetAExampleStableAlert
+          expr: vector(1)
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Stable alert for target-a"

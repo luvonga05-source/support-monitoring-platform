@@ -1,0 +1,38 @@
+.github
+    workflows
+        *.yaml
+applications
+    monitoring-content
+        components
+            alerts
+                packs
+                    *
+                        kustomization.yaml
+                        *.yaml
+                targets
+                    *
+                        experimental
+                            kustomization.yaml
+                            *.yaml
+                        stable
+                            kustomization.yaml
+                            *.yaml
+            targets
+                *
+                    resources
+                        secrets
+                            *.yaml
+                        *.yaml
+                    values.yaml
+
+        overlays
+            *
+                include
+                    *
+                        *targets.d
+                            *.json
+                        kustomization.yaml
+                        *.yaml
+                kustomization.yaml
+scripts
+    validate_structure.sh

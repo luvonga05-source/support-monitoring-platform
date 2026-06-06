@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-structure
+        name: Validate folder structure
+        entry: scripts/validate_structure.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-commit, pre-push]

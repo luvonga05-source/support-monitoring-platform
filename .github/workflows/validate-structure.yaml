@@ -1,0 +1,22 @@
+name: Validate repository structure
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-structure:
+    name: Run scripts/validate_structure.sh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate structure
+        shell: bash
+        run: ./scripts/validate_structure.sh

@@ -1,0 +1,87 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pack-db-health
+  namespace: monitoring-support
+  labels:
+    monitoring.cybertec.at/scope: customers
+spec:
+  groups:
+    - name: pack.db-health
+      rules:
+        - alert: DBInstanceDown
+          expr: (pgwatch_rs_instance_up{shutdown!="True"} == 0)+1
+          for: 10m
+          labels:
+            severity: critical
+            team: dba
+            priority: P1
+          annotations:
+            summary: "DB instance is down"
+            description: "A Database Instance is down"
+
+        - alert: DBInstanceDisappeared
+          expr: pgwatch_rs_instance_up + pgwatch_rs_instance_up offset 4h == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: dba
+            priority: P3
+          annotations:
+            summary: "DB instance has disappeared"
+            description: "A Database Instance has disappeared"
+
+        - alert: ArchiveFailed
+          expr: pgwatch_rs_archiver_is_failing_int != 0
+          for: 5m
+          labels:
+            severity: warning
+            team: dba
+            priority: P3
+          annotations:
+            summary: "Archive failed"
+            description: "Archive failed"
+
+        - alert: AutovacuumDisabled
+          expr: pgwatch_rs_autovacuum_enabled < 1
+          for: 3m
+          labels:
+            severity: warning
+            team: dba
+            priority: P3
+          annotations:
+            summary: "Autovacuum disabled"
+            description: "Autovacuum is not running"
+
+        - alert: LowCommitRatio
+          expr: pgwatch_rs_commitratio_commit_ratio <= 50
+          for: 10m
+          labels:
+            severity: warning
+            team: dba
+            priority: P3
+          annotations:
+            summary: "Low commit ratio"
+            description: "Commit ratio is lower than 50% for 10 minutes"
+
+        - alert: MemoryUsedHigh
+          expr: pgwatch_rs_psutil_mem_used / pgwatch_rs_psutil_mem_total * 100 >= 90
+          for: 15m
+          labels:
+            severity: warning
+            team: dba
+            priority: P1
+          annotations:
+            summary: "Memory used more than 90%"
+            description: "Memory used more than 90 percent"
+
+        - alert: TooMuchRAMUtilized
+          expr: pgwatch_rs_psutil_mem_percent > 90
+          for: 50m
+          labels:
+            severity: critical
+            team: dba
+            priority: P1
+          annotations:
+            summary: "RAM Used > 90%"
+            description: "Only 10% RAM are left"

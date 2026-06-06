@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pack-latency
+  namespace: monitoring-support
+  labels:
+    monitoring.cybertec.at/scope: customers
+spec:
+  groups:
+    - name: pack.latency
+      rules:
+        - alert: ReplicationLagTooHigh
+          expr: >
+            (min_over_time(pgwatch_rs_replication_write_lag_b[5m])
+            + min_over_time(pgwatch_rs_replication_flush_lag_b[5m])
+            + min_over_time(pgwatch_rs_replication_replay_lag_b[5m])) > 256*1024*1024
+          for: 10m
+          labels:
+            severity: warning
+            team: dba
+            priority: P3
+          annotations:
+            summary: "Replication Lag > 256MB"
+            description: "Replication is lagging behind"
+
+        - alert: PostgresReplicationSlotHugeLag
+          expr: pgwatch_rs_replication_slot_pg_wal_lsn_diff_bytes > 5000000000
+          for: 5m
+          labels:
+            severity: warning
+            team: dba
+            priority: P3
+          annotations:
+            summary: "Slot retaining critical WAL on {{ $labels.customer }}"
+            description: >
+              The slot '{{ $labels.tag_slot_name }}' on {{ $labels.hostname }}
+              is retaining {{ $value | humanize1024 }}B of WAL.
+              This prevents cleanup and will fill the disk.
+
+
+
+  
